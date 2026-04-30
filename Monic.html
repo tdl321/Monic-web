@@ -20,9 +20,11 @@
     '1111..........',
   ];
   var size = 64, rows = mask.length, cols = mask[0].length;
-  var pad = 4;
-  var cw = (size - pad * 2) / cols;
+  var pad = 3;
   var ch = (size - pad * 2) / rows;
+  var cw = ch * 0.6;
+  var totalW = cw * cols;
+  var ox = (size - totalW) / 2;
   var c = document.createElement('canvas');
   c.width = c.height = size;
   var ctx = c.getContext('2d');
@@ -31,7 +33,7 @@
   for (var r = 0; r < rows; r++) {
     for (var col = 0; col < cols; col++) {
       if (mask[r][col] === '1') {
-        ctx.fillRect(pad + col * cw, pad + r * ch, cw, ch);
+        ctx.fillRect(ox + col * cw, pad + r * ch, cw, ch);
       }
     }
   }
