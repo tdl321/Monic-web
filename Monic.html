@@ -333,7 +333,7 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
   React.useEffect(() => {
     if (!mouse.active) {
       items.forEach(it => {
-        it.el.textContent  = it.original === ' ' ? ' ' : it.original;
+        it.el.textContent  = it.original === ' ' ? ' ' : it.original;
         it.el.style.transform = '';
         it.el.style.opacity   = '1';
       });
@@ -359,7 +359,7 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
       {text.split('').map((ch, i) => (
         <span key={i} data-g data-orig={ch}
               style={{ display: 'inline-block', transition: 'transform .12s ease-out' }}>
-          {ch === ' ' ? ' ' : ch}
+          {ch === ' ' ? ' ' : ch}
         </span>
       ))}
     </span>
