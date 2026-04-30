@@ -368,6 +368,19 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
 }
 
 const LETTER_MASKS = {
+  MU: [
+    '111........111',
+    '111........111',
+    '111........111',
+    '111........111',
+    '111........111',
+    '111........111',
+    '111........111',
+    '.111111111111.',
+    '111...........',
+    '111...........',
+    '111...........',
+  ],
   M: [
     '111........111',
     '1111......1111',
@@ -470,7 +483,7 @@ function WordmarkAscii({ mouse, tick, fontSize, color, weight, letterSpacing }) 
 
 function LogoM({ mouse, tick, color }) {
   const phase = Math.floor(tick / 5);
-  const rows  = LETTER_MASKS.M.slice(0, LETTER_MASKS.M.length - 3);
+  const rows  = LETTER_MASKS.MU;
   return (
     <div style={{ fontSize: 6, lineHeight: 1.0, letterSpacing: '0.05em', whiteSpace: 'pre', color, fontFamily: 'inherit', flexShrink: 0 }}>
       {rows.map((row, ry) => {
