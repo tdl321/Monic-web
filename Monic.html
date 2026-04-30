@@ -4,7 +4,43 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Monic</title>
-<link rel="icon" href="data:,">
+<script>
+(function () {
+  var mask = [
+    '1111......1111',
+    '1111......1111',
+    '1111......1111',
+    '1111......1111',
+    '1111......1111',
+    '1111......1111',
+    '11111....11111',
+    '111111111111..',
+    '1111..........',
+    '1111..........',
+    '1111..........',
+  ];
+  var size = 64, rows = mask.length, cols = mask[0].length;
+  var pad = 4;
+  var cw = (size - pad * 2) / cols;
+  var ch = (size - pad * 2) / rows;
+  var c = document.createElement('canvas');
+  c.width = c.height = size;
+  var ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, size, size);
+  ctx.fillStyle = '#0a0a0a';
+  for (var r = 0; r < rows; r++) {
+    for (var col = 0; col < cols; col++) {
+      if (mask[r][col] === '1') {
+        ctx.fillRect(pad + col * cw, pad + r * ch, cw, ch);
+      }
+    }
+  }
+  var link = document.createElement('link');
+  link.rel = 'icon'; link.type = 'image/png';
+  link.href = c.toDataURL('image/png');
+  document.head.appendChild(link);
+})();
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
