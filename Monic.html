@@ -584,6 +584,16 @@ function MonicV2({ tweaks }) {
         </div>
       </div>
 
+      {/* footer */}
+      <div style={{
+        flexShrink: 0, textAlign: 'center',
+        padding: 'clamp(16px, 2vw, 28px) clamp(20px, 5vw, 64px)',
+        fontSize: 'clamp(9px, 1vw, 11px)', letterSpacing: '0.22em', textTransform: 'uppercase',
+        color: fgDim,
+      }}>
+        <Reactive mouse={mouse} t={tick}>{'© 2026 Monic Capital'}</Reactive>
+      </div>
+
     </div>
   );
 }
