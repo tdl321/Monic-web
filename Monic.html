@@ -543,9 +543,6 @@ function MonicV2({ tweaks }) {
         padding: 'clamp(24px, 5vw, 56px) clamp(20px, 5vw, 64px)',
       }}>
         <LogoM mouse={mouse} tick={tick} color={fg} />
-        <div style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: fgDim, textAlign: 'right', lineHeight: 1.7 }}>
-          <Reactive mouse={mouse} t={tick}>contact@monic.co</Reactive>
-        </div>
       </div>
 
       {/* wordmark */}
@@ -587,16 +584,6 @@ function MonicV2({ tweaks }) {
         </div>
       </div>
 
-      {/* footer */}
-      <div style={{
-        flexShrink: 0,
-        display: 'flex', justifyContent: 'flex-end',
-        padding: 'clamp(16px, 2vw, 28px) clamp(20px, 5vw, 64px)',
-        fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase',
-        color: fgFaint,
-      }}>
-        <span>v 0.4.1</span>
-      </div>
     </div>
   );
 }
