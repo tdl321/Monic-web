@@ -451,53 +451,6 @@ function buildWordmarkRows(letters, gap) {
   return rows;
 }
 
-// Converts david.png to a reactive ASCII grid at runtime using canvas sampling.
-function DavidAscii({ mouse, tick, color }) {
-  const [rows, setRows] = React.useState([]);
-  const COLS = 80;   // characters per row
-  const CHAR_RATIO = 1.9; // monospace height/width ratio
-  const POOL = 'monic';
-  const phase = Math.floor(tick / 5);
-
-  React.useEffect(() => {
-    const img = new Image();
-    img.src = 'david.png';
-    img.onload = () => {
-      const rowCount = Math.round(COLS * (img.height / img.width) / CHAR_RATIO);
-      const c = document.createElement('canvas');
-      c.width = COLS; c.height = rowCount;
-      const ctx = c.getContext('2d');
-      ctx.drawImage(img, 0, 0, COLS, rowCount);
-      const data = ctx.getImageData(0, 0, COLS, rowCount).data;
-      const grid = [];
-      for (let r = 0; r < rowCount; r++) {
-        let line = '';
-        for (let col = 0; col < COLS; col++) {
-          const i = (r * COLS + col) * 4;
-          const brightness = (data[i] + data[i+1] + data[i+2]) / 3;
-          line += brightness < 128 ? '1' : '.';
-        }
-        grid.push(line);
-      }
-      setRows(grid);
-    };
-  }, []);
-
-  if (!rows.length) return null;
-  return (
-    <div style={{ display: 'inline-block', fontSize: 5, lineHeight: 1.0, letterSpacing: '0.05em', whiteSpace: 'pre', color, fontFamily: 'inherit' }}>
-      {rows.map((row, ry) => {
-        const text = row.split('').map((cell, cx) => {
-          if (cell === '.') return ' ';
-          const seed = (phase * 73856093) ^ (ry * 19349663) ^ (cx * 83492791);
-          return POOL[Math.abs(seed) % POOL.length];
-        }).join('');
-        return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
-      })}
-    </div>
-  );
-}
-
 function WordmarkAscii({ mouse, tick, fontSize, color, weight, letterSpacing }) {
   const phase = Math.floor(tick / 5);
   const rows  = buildWordmarkRows('MONIC', 3);
@@ -616,11 +569,6 @@ function MonicV2({ tweaks }) {
         }}>
           <Reactive mouse={mouse} t={tick}>{'Quantitative  Trading  Firm'}</Reactive>
         </div>
-      </div>
-
-      {/* david ascii */}
-      <div style={{ flexShrink: 0, display: 'flex', justifyContent: 'center', padding: 'clamp(16px, 3vw, 40px) 0' }}>
-        <DavidAscii mouse={mouse} tick={tick} color={fg} />
       </div>
 
       {/* thesis */}
