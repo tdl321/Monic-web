@@ -523,7 +523,7 @@ function LogoM({ mouse, tick, color }) {
   const phase = Math.floor(tick / 5);
   const rows  = LETTER_MASKS.MU;
   return (
-    <div style={{ fontSize: 4.5, lineHeight: 1.0, letterSpacing: '0.05em', whiteSpace: 'pre', color, fontFamily: 'inherit', flexShrink: 0 }}>
+    <div style={{ fontSize: 3, lineHeight: 1.0, letterSpacing: '0.05em', whiteSpace: 'pre', color, fontFamily: 'inherit', flexShrink: 0 }}>
       {rows.map((row, ry) => {
         const txt = row.split('').map((cell, cx) => {
           if (cell === '.') return ' ';
