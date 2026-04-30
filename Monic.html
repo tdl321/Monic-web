@@ -6,36 +6,16 @@
 <title>Monic</title>
 <script>
 (function () {
-  var mask = [
-    '111........111',
-    '1111......1111',
-    '11111....11111',
-    '111.11..11.111',
-    '111..1111..111',
-    '111...11...111',
-    '111........111',
-    '111........111',
-    '111........111',
-    '111........111',
-    '111........111'
-  ];
-  var size = 64, pad = 5;
-  var rows = mask.length, cols = mask[0].length;
-  var cw = (size - pad * 2) / cols;
-  var ch = (size - pad * 2) / rows;
+  var size = 64;
   var c = document.createElement('canvas');
   c.width = c.height = size;
   var ctx = c.getContext('2d');
-  ctx.fillStyle = '#fafaf7';
-  ctx.fillRect(0, 0, size, size);
+  ctx.clearRect(0, 0, size, size);
   ctx.fillStyle = '#0a0a0a';
-  for (var r = 0; r < rows; r++) {
-    for (var col = 0; col < cols; col++) {
-      if (mask[r][col] === '1') {
-        ctx.fillRect(pad + col * cw, pad + r * ch, cw, ch);
-      }
-    }
-  }
+  ctx.font = '500 52px "Courier New", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('M', size / 2, size / 2 + 2);
   var link = document.createElement('link');
   link.rel = 'icon';
   link.type = 'image/png';
