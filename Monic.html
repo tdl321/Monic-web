@@ -23,7 +23,7 @@
 
 <script type="text/babel" data-presets="react">
 
-// ─── tweaks-panel ─────────────────────────────────────────────────────────────
+// ---- tweaks-panel -----------------------------------------------------------
 
 const __TWEAKS_STYLE = `
   .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
@@ -79,8 +79,7 @@ const __TWEAKS_STYLE = `
   .twk-seg.dragging .twk-seg-thumb{transition:none}
   .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
     background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
-    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
-    overflow-wrap:anywhere}
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;overflow-wrap:anywhere}
   .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
     background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
   .twk-toggle[data-on="1"]{background:#34c759}
@@ -90,8 +89,6 @@ const __TWEAKS_STYLE = `
   .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
     background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
   .twk-btn:hover{background:rgba(0,0,0,.88)}
-  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
-  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
 `;
 
 function useTweaks(defaults) {
@@ -115,13 +112,13 @@ function TweaksPanel({ title = 'Tweaks', children }) {
     const panel = dragRef.current;
     if (!panel) return;
     const w = panel.offsetWidth, h = panel.offsetHeight;
-    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxRight  = Math.max(PAD, window.innerWidth  - w - PAD);
     const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
     offsetRef.current = {
-      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      x: Math.min(maxRight,  Math.max(PAD, offsetRef.current.x)),
       y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
     };
-    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.right  = offsetRef.current.x + 'px';
     panel.style.bottom = offsetRef.current.y + 'px';
   }, []);
 
@@ -140,7 +137,7 @@ function TweaksPanel({ title = 'Tweaks', children }) {
   React.useEffect(() => {
     const onMsg = (e) => {
       const t = e?.data?.type;
-      if (t === '__activate_edit_mode') setOpen(true);
+      if (t === '__activate_edit_mode')   setOpen(true);
       else if (t === '__deactivate_edit_mode') setOpen(false);
     };
     window.addEventListener('message', onMsg);
@@ -158,21 +155,21 @@ function TweaksPanel({ title = 'Tweaks', children }) {
     if (!panel) return;
     const r = panel.getBoundingClientRect();
     const sx = e.clientX, sy = e.clientY;
-    const startRight = window.innerWidth - r.right;
+    const startRight  = window.innerWidth  - r.right;
     const startBottom = window.innerHeight - r.bottom;
     const move = (ev) => {
       offsetRef.current = {
-        x: startRight - (ev.clientX - sx),
+        x: startRight  - (ev.clientX - sx),
         y: startBottom - (ev.clientY - sy),
       };
       clampToViewport();
     };
     const up = () => {
       window.removeEventListener('mousemove', move);
-      window.removeEventListener('mouseup', up);
+      window.removeEventListener('mouseup',   up);
     };
     window.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', up);
+    window.addEventListener('mouseup',   up);
   };
 
   if (!open) return null;
@@ -185,7 +182,7 @@ function TweaksPanel({ title = 'Tweaks', children }) {
           <b>{title}</b>
           <button className="twk-x" aria-label="Close tweaks"
                   onMouseDown={(e) => e.stopPropagation()}
-                  onClick={dismiss}>✕</button>
+                  onClick={dismiss}>x</button>
         </div>
         <div className="twk-body">{children}</div>
       </div>
@@ -193,13 +190,8 @@ function TweaksPanel({ title = 'Tweaks', children }) {
   );
 }
 
-function TweakSection({ label, children }) {
-  return (
-    <>
-      <div className="twk-sect">{label}</div>
-      {children}
-    </>
-  );
+function TweakSection({ label }) {
+  return <div className="twk-sect">{label}</div>;
 }
 
 function TweakRow({ label, value, children, inline = false }) {
@@ -245,8 +237,7 @@ function TweakRadio({ label, value, options, onChange }) {
 
   const segAt = (clientX) => {
     const r = trackRef.current.getBoundingClientRect();
-    const inner = r.width - 4;
-    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    const i = Math.floor(((clientX - r.left - 2) / (r.width - 4)) * n);
     return opts[Math.max(0, Math.min(n - 1, i))].value;
   };
 
@@ -254,16 +245,8 @@ function TweakRadio({ label, value, options, onChange }) {
     setDragging(true);
     const v0 = segAt(e.clientX);
     if (v0 !== valueRef.current) onChange(v0);
-    const move = (ev) => {
-      if (!trackRef.current) return;
-      const v = segAt(ev.clientX);
-      if (v !== valueRef.current) onChange(v);
-    };
-    const up = () => {
-      setDragging(false);
-      window.removeEventListener('pointermove', move);
-      window.removeEventListener('pointerup', up);
-    };
+    const move = (ev) => { if (trackRef.current) { const v = segAt(ev.clientX); if (v !== valueRef.current) onChange(v); } };
+    const up = () => { setDragging(false); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
   };
@@ -273,12 +256,9 @@ function TweakRadio({ label, value, options, onChange }) {
       <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
            className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
         <div className="twk-seg-thumb"
-             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
-                      width: `calc((100% - 4px) / ${n})` }} />
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`, width: `calc((100% - 4px) / ${n})` }} />
         {opts.map((o) => (
-          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
-            {o.label}
-          </button>
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>{o.label}</button>
         ))}
       </div>
     </TweakRow>
@@ -303,8 +283,7 @@ function TweakText({ label, value, placeholder, multiline, onChange }) {
   if (multiline) {
     return (
       <TweakRow label={label}>
-        <textarea className="twk-field" value={value} placeholder={placeholder}
-                  rows={4}
+        <textarea className="twk-field" value={value} placeholder={placeholder} rows={4}
                   style={{ height: 'auto', resize: 'vertical', padding: '6px 8px', lineHeight: 1.4 }}
                   onChange={(e) => onChange(e.target.value)} />
       </TweakRow>
@@ -318,9 +297,8 @@ function TweakText({ label, value, placeholder, multiline, onChange }) {
   );
 }
 
-// ─── monic-v2 ─────────────────────────────────────────────────────────────────
+// ---- monic-v2 ---------------------------------------------------------------
 
-// Coerce ANY children shape to a flat string.
 function flattenToText(children) {
   if (children == null || children === false) return '';
   if (typeof children === 'string') return children;
@@ -344,8 +322,8 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
       const r = g.getBoundingClientRect();
       return {
         el: g,
-        cx: r.left - root.left + r.width / 2,
-        cy: r.top - root.top + r.height / 2,
+        cx: r.left - root.left + r.width  / 2,
+        cy: r.top  - root.top  + r.height / 2,
         original: g.dataset.orig,
       };
     });
@@ -355,9 +333,9 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
   React.useEffect(() => {
     if (!mouse.active) {
       items.forEach(it => {
-        it.el.textContent = it.original === ' ' ? ' ' : it.original;
+        it.el.textContent  = it.original === ' ' ? ' ' : it.original;
         it.el.style.transform = '';
-        it.el.style.opacity = '1';
+        it.el.style.opacity   = '1';
       });
       return;
     }
@@ -365,17 +343,14 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
     items.forEach(it => {
       const dx = it.cx - mouse.x;
       const dy = it.cy - mouse.y;
-      const d = Math.hypot(dx, dy) || 0.001;
+      const d  = Math.hypot(dx, dy) || 0.001;
       if (d < R && it.original !== ' ') {
-        const ux = dx / d;
-        const uy = dy / d;
         const push = R - d;
-        it.el.style.transform = `translate(${ux * push}px, ${uy * push}px)`;
-        it.el.style.opacity = '1';
+        it.el.style.transform = `translate(${(dx / d) * push}px, ${(dy / d) * push}px)`;
       } else {
         it.el.style.transform = '';
-        it.el.style.opacity = '1';
       }
+      it.el.style.opacity = '1';
     });
   }, [mouse, t, items]);
 
@@ -383,15 +358,14 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
     <span ref={ref} className={className} style={extra}>
       {text.split('').map((ch, i) => (
         <span key={i} data-g data-orig={ch}
-              style={{ display: 'inline-block', transition: 'transform .12s ease-out, opacity .15s' }}>
-          {ch === ' ' ? ' ' : ch}
+              style={{ display: 'inline-block', transition: 'transform .12s ease-out' }}>
+          {ch === ' ' ? ' ' : ch}
         </span>
       ))}
     </span>
   );
 }
 
-// Letter masks ~14 cells wide, 11 rows tall, 3-4 cell thick strokes.
 const LETTER_MASKS = {
   M: [
     '111........111',
@@ -461,6 +435,7 @@ const LETTER_MASKS = {
 };
 
 const ROWS_PER_LETTER = 11;
+const WORDMARK_POOL   = 'monic';
 
 function buildWordmarkRows(letters, gap) {
   const rows = [];
@@ -475,60 +450,35 @@ function buildWordmarkRows(letters, gap) {
   return rows;
 }
 
-const WORDMARK_POOL = 'monic';
-
 function WordmarkAscii({ mouse, tick, fontSize, color, weight, letterSpacing }) {
-  const CYCLE = 5;
-  const phase = Math.floor(tick / CYCLE);
-  const rows = buildWordmarkRows('MONIC', 3);
+  const phase = Math.floor(tick / 5);
+  const rows  = buildWordmarkRows('MONIC', 3);
   return (
-    <div style={{
-      display: 'inline-block',
-      fontSize,
-      lineHeight: 1.0,
-      letterSpacing,
-      fontWeight: weight,
-      color,
-      whiteSpace: 'pre',
-    }}>
+    <div style={{ display: 'inline-block', fontSize, lineHeight: 1.0, letterSpacing, fontWeight: weight, color, whiteSpace: 'pre' }}>
       {rows.map((row, ry) => {
         const text = row.split('').map((cell, cx) => {
-          if (cell === '.') return ' ';
+          if (cell === '.') return ' ';
           const seed = (phase * 73856093) ^ (ry * 19349663) ^ (cx * 83492791);
           return WORDMARK_POOL[Math.abs(seed) % WORDMARK_POOL.length];
         }).join('');
-        return (
-          <div key={ry}>
-            <Reactive mouse={mouse} t={tick}>{text}</Reactive>
-          </div>
-        );
+        return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
       })}
     </div>
   );
 }
 
 function LogoM({ mouse, tick, color }) {
-  const CYCLE = 5;
-  const phase = Math.floor(tick / CYCLE);
-  // Trim bottom 3 rows for a compact corner mark
-  const rows = LETTER_MASKS.M.slice(0, LETTER_MASKS.M.length - 3);
+  const phase = Math.floor(tick / 5);
+  const rows  = LETTER_MASKS.M.slice(0, LETTER_MASKS.M.length - 3);
   return (
-    <div style={{
-      position: 'absolute', top: 56, left: 64,
-      fontSize: 6, lineHeight: 1.0, letterSpacing: '0.05em',
-      whiteSpace: 'pre',
-      color,
-      fontFamily: 'inherit',
-    }}>
+    <div style={{ fontSize: 6, lineHeight: 1.0, letterSpacing: '0.05em', whiteSpace: 'pre', color, fontFamily: 'inherit', flexShrink: 0 }}>
       {rows.map((row, ry) => {
         const txt = row.split('').map((cell, cx) => {
-          if (cell === '.') return ' ';
+          if (cell === '.') return ' ';
           const seed = (phase * 73856093) ^ (ry * 19349663) ^ (cx * 83492791);
           return WORDMARK_POOL[Math.abs(seed) % WORDMARK_POOL.length];
         }).join('');
-        return (
-          <div key={ry}><Reactive mouse={mouse} t={tick}>{txt}</Reactive></div>
-        );
+        return <div key={ry}><Reactive mouse={mouse} t={tick}>{txt}</Reactive></div>;
       })}
     </div>
   );
@@ -538,7 +488,7 @@ function MonicV2({ tweaks }) {
   const t = tweaks;
   const rootRef = React.useRef(null);
   const [mouse, setMouse] = React.useState({ x: -9999, y: -9999, active: false });
-  const [tick, setTick] = React.useState(0);
+  const [tick,  setTick]  = React.useState(0);
 
   React.useEffect(() => {
     let raf;
@@ -547,11 +497,14 @@ function MonicV2({ tweaks }) {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  const onMove = (e) => {
+  const coords = (clientX, clientY) => {
     const r = rootRef.current.getBoundingClientRect();
-    setMouse({ x: e.clientX - r.left, y: e.clientY - r.top, active: true });
+    return { x: clientX - r.left, y: clientY - r.top };
   };
-  const onLeave = () => setMouse(m => ({ ...m, active: false }));
+  const onMouseMove  = (e) => setMouse({ ...coords(e.clientX, e.clientY), active: true });
+  const onMouseLeave = ()  => setMouse(m => ({ ...m, active: false }));
+  const onTouchMove  = (e) => { const t = e.touches[0]; setMouse({ ...coords(t.clientX, t.clientY), active: true }); };
+  const onTouchEnd   = ()  => setMouse(m => ({ ...m, active: false }));
 
   const fontFamily = t.font === 'jetbrains'
     ? '"JetBrains Mono", ui-monospace, monospace'
@@ -559,121 +512,104 @@ function MonicV2({ tweaks }) {
     ? '"IBM Plex Mono", ui-monospace, monospace'
     : '"Roboto Mono", ui-monospace, monospace';
 
-  const bg = t.dark ? '#0a0a0a' : '#fafaf7';
-  const fg = t.dark ? '#f4f4f1' : '#0a0a0a';
-  const fgDim = t.dark ? 'rgba(244,244,241,0.55)' : 'rgba(0,0,0,0.55)';
-  const fgFaint = t.dark ? 'rgba(244,244,241,0.4)' : 'rgba(0,0,0,0.42)';
+  const bg      = t.dark ? '#0a0a0a' : '#fafaf7';
+  const fg      = t.dark ? '#f4f4f1' : '#0a0a0a';
+  const fgDim   = t.dark ? 'rgba(244,244,241,0.55)' : 'rgba(0,0,0,0.55)';
+  const fgFaint = t.dark ? 'rgba(244,244,241,0.4)'  : 'rgba(0,0,0,0.42)';
+
+  const wmFontSize = `clamp(3.5px, ${t.wordmarkScale * 0.10}vw, ${Math.round(t.wordmarkScale * 1.4)}px)`;
 
   return (
     <div
       ref={rootRef}
       data-monic-root
-      onMouseMove={onMove}
-      onMouseLeave={onLeave}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
       style={{
-        position: 'relative',
-        width: '100%',
-        minHeight: '100vh',
-        background: bg,
-        color: fg,
-        fontFamily,
-        fontSize: 14,
-        overflow: 'hidden',
-        cursor: 'default',
+        display: 'flex', flexDirection: 'column',
+        width: '100%', minHeight: '100vh',
+        background: bg, color: fg, fontFamily,
+        fontSize: 14, cursor: 'default',
         transition: 'background .2s, color .2s',
+        overflowX: 'hidden',
       }}
     >
-      {/* ASCII logo — constantly shimmering M */}
-      <LogoM mouse={mouse} tick={tick} color={fg} />
-
-      {/* Top-right contact */}
+      {/* header */}
       <div style={{
-        position: 'absolute', top: 56, right: 64,
-        fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase',
-        color: fgDim,
-        textAlign: 'right', lineHeight: 1.7,
+        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
+        flexShrink: 0,
+        padding: 'clamp(24px, 5vw, 56px) clamp(20px, 5vw, 64px)',
       }}>
-        <div><Reactive mouse={mouse} t={tick}>contact@monic.co</Reactive></div>
+        <LogoM mouse={mouse} tick={tick} color={fg} />
+        <div style={{ fontSize: 10, letterSpacing: '0.22em', textTransform: 'uppercase', color: fgDim, textAlign: 'right', lineHeight: 1.7 }}>
+          <Reactive mouse={mouse} t={tick}>contact@monic.co</Reactive>
+        </div>
       </div>
 
-      {/* Wordmark */}
+      {/* wordmark */}
       <div style={{
-        position: 'absolute',
-        top: '34%',
-        left: 0, right: 0,
-        textAlign: 'center',
-        transform: 'translateY(-50%)',
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: 'clamp(16px, 3vw, 40px) clamp(16px, 4vw, 48px)',
+        overflow: 'hidden',
       }}>
-        <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'inline-block', maxWidth: '100%', overflow: 'hidden' }}>
           <WordmarkAscii
-            mouse={mouse}
-            tick={tick}
-            fontSize={`clamp(3px, ${t.wordmarkScale * 0.10}vw, ${Math.round(t.wordmarkScale * 1.4)}px)`}
-            color={fg}
-            weight={t.weight}
+            mouse={mouse} tick={tick}
+            fontSize={wmFontSize}
+            color={fg} weight={t.weight}
             letterSpacing={t.tracking + 'em'}
           />
         </div>
         <div style={{
-          marginTop: 56,
-          fontSize: 13, letterSpacing: '0.42em', textTransform: 'uppercase',
+          marginTop: 'clamp(20px, 3.5vw, 56px)',
+          fontSize: 'clamp(9px, 1.1vw, 13px)',
+          letterSpacing: '0.42em', textTransform: 'uppercase',
           color: fgDim,
         }}>
-          <Reactive mouse={mouse} t={tick}>{'Quantitative  Trading  Firm'}</Reactive>
+          <Reactive mouse={mouse} t={tick}>{'Quantitative  Trading  Firm'}</Reactive>
         </div>
       </div>
 
-      {/* Thesis */}
+      {/* thesis */}
       <div style={{
-        position: 'absolute',
-        bottom: 96,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: 'min(880px, calc(100vw - 128px))',
+        flexShrink: 0,
+        padding: 'clamp(24px, 4vw, 64px) clamp(24px, 8vw, 120px)',
+        textAlign: 'center',
       }}>
-        <div style={{
-          fontSize: 15, letterSpacing: '0.32em', textTransform: 'uppercase',
-          color: fg,
-          textAlign: 'center',
-          marginBottom: 18,
-        }}>
+        <div style={{ fontSize: 'clamp(11px, 1.3vw, 15px)', letterSpacing: '0.32em', textTransform: 'uppercase', color: fg, marginBottom: 18 }}>
           <Reactive mouse={mouse} t={tick}>Thesis</Reactive>
         </div>
-        <div style={{
-          padding: '32px 44px',
-          fontSize: 15, lineHeight: 1.85,
-          color: fg,
-          textAlign: 'center',
-          letterSpacing: '0.005em',
-        }}>
+        <div style={{ fontSize: 'clamp(11px, 1.3vw, 15px)', lineHeight: 1.85, color: fg, letterSpacing: '0.005em', maxWidth: 800, margin: '0 auto' }}>
           <Reactive mouse={mouse} t={tick}>{t.thesis}</Reactive>
         </div>
       </div>
 
-      {/* Footer */}
+      {/* footer */}
       <div style={{
-        position: 'absolute', bottom: 28, left: 64, right: 64,
-        display: 'flex', justifyContent: 'space-between',
+        flexShrink: 0,
+        display: 'flex', justifyContent: 'flex-end',
+        padding: 'clamp(16px, 2vw, 28px) clamp(20px, 5vw, 64px)',
         fontSize: 9, letterSpacing: '0.22em', textTransform: 'uppercase',
         color: fgFaint,
       }}>
-        <span></span>
-        <span></span>
         <span>v 0.4.1</span>
       </div>
     </div>
   );
 }
 
-// ─── App ──────────────────────────────────────────────────────────────────────
+// ---- App --------------------------------------------------------------------
 
 const TWEAK_DEFAULTS = {
-  "font": "jetbrains",
-  "tracking": 0,
-  "weight": 300,
-  "wordmarkScale": 10,
-  "dark": false,
-  "thesis": "We are a lean prop team focused on HFT arbitrage in an era of decentralisation. We see an opportunity, through blockchain and ai convergence, in sophisticated quant teams to capture alpha in previously un-tradeable markets."
+  font: 'jetbrains',
+  tracking: 0,
+  weight: 300,
+  wordmarkScale: 10,
+  dark: false,
+  thesis: 'We are a lean prop team focused on HFT arbitrage in an era of decentralisation. We see an opportunity, through blockchain and ai convergence, in sophisticated quant teams to capture alpha in previously un-tradeable markets.',
 };
 
 function App() {
@@ -685,9 +621,9 @@ function App() {
         <TweakSection label="Typography" />
         <TweakSelect label="Mono font" value={t.font}
           options={[
-            { value: 'roboto', label: 'Roboto Mono' },
+            { value: 'roboto',    label: 'Roboto Mono' },
             { value: 'jetbrains', label: 'JetBrains Mono' },
-            { value: 'plex', label: 'IBM Plex Mono' },
+            { value: 'plex',      label: 'IBM Plex Mono' },
           ]}
           onChange={(v) => setTweak('font', v)} />
         <TweakSlider label="Wordmark size" value={t.wordmarkScale} min={10} max={22} step={0.5} unit="vw"
