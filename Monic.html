@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Monic</title>
+<link id="favicon" rel="icon" href="data:,">
 <script>
 document.fonts.ready.then(function () {
   var mask = [
@@ -40,10 +41,9 @@ document.fonts.ready.then(function () {
       }
     }
   }
-  var link = document.createElement('link');
-  link.rel = 'icon'; link.type = 'image/png';
+  var link = document.getElementById('favicon');
+  link.type = 'image/png';
   link.href = c.toDataURL('image/png');
-  document.head.appendChild(link);
 });
 </script>
 
