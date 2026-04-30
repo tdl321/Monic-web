@@ -4,48 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Monic</title>
-<link id="favicon" rel="icon" href="data:,">
-<script>
-document.fonts.ready.then(function () {
-  var mask = [
-    '1111......1111',
-    '1111......1111',
-    '1111......1111',
-    '1111......1111',
-    '1111......1111',
-    '1111......1111',
-    '11111....11111',
-    '111111111111..',
-    '1111..........',
-    '1111..........',
-    '1111..........',
-  ];
-  var pool = 'monic';
-  var size = 256, rows = mask.length, cols = mask[0].length;
-  var pad = 8;
-  var ch = (size - pad * 2) / rows;
-  var cw = ch * 0.6;
-  var ox = (size - cw * cols) / 2;
-  var c = document.createElement('canvas');
-  c.width = c.height = size;
-  var ctx = c.getContext('2d');
-  ctx.clearRect(0, 0, size, size);
-  ctx.fillStyle = '#0a0a0a';
-  ctx.font = '400 ' + ch + 'px "JetBrains Mono", monospace';
-  ctx.textBaseline = 'top';
-  for (var r = 0; r < rows; r++) {
-    for (var col = 0; col < cols; col++) {
-      if (mask[r][col] === '1') {
-        var ch2 = pool[(r * 37 + col * 73) % pool.length];
-        ctx.fillText(ch2, ox + col * cw, pad + r * ch);
-      }
-    }
-  }
-  var link = document.getElementById('favicon');
-  link.type = 'image/png';
-  link.href = c.toDataURL('image/png');
-});
-</script>
+<link rel="icon" type="image/png" sizes="32x32" href="/icon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
