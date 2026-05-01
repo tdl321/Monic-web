@@ -670,25 +670,37 @@ const TEAM_MASKS = [
   ],
 ];
 
-const ICON_SIZE    = 60;  // px — fixed display box for every icon
-const ICON_FONT    = 4.5; // px — reference render size
-const ICON_CHAR_W  = 0.6; // monospace char-width / font-size ratio
+const ICON_TARGET = 80; // px — every icon scales to fit this box
+
+const TEAM_MEMBERS = [
+  { name: 'Name', role: 'Role' },
+  { name: 'Name', role: 'Role' },
+  { name: 'Name', role: 'Role' },
+  { name: 'Name', role: 'Role' },
+  { name: 'Name', role: 'Role' },
+  { name: 'Name', role: 'Role' },
+];
 
 function TeamIcon({ mask, mouse, tick, fg }) {
-  const rows     = mask.length;
-  const maxCols  = Math.max(...mask.map(r => r.length));
-  const naturalH = rows    * ICON_FONT;
-  const naturalW = maxCols * ICON_FONT * ICON_CHAR_W;
-  const scale    = Math.min(ICON_SIZE / naturalW, ICON_SIZE / naturalH);
-  const offsetX  = (ICON_SIZE - naturalW * scale) / 2;
-  const offsetY  = (ICON_SIZE - naturalH * scale) / 2;
+  const innerRef = React.useRef(null);
+  const [scale, setScale] = React.useState(1);
+  const [measured, setMeasured] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!innerRef.current) return;
+    const { width, height } = innerRef.current.getBoundingClientRect();
+    if (width === 0 || height === 0) return;
+    setScale(Math.min(ICON_TARGET / width, ICON_TARGET / height));
+    setMeasured(true);
+  }, []);
 
   return (
-    <div style={{ width: ICON_SIZE, height: ICON_SIZE, position: 'relative', flexShrink: 0 }}>
-      <div style={{
-        position: 'absolute', top: offsetY, left: offsetX,
+    <div style={{ width: ICON_TARGET, height: ICON_TARGET, position: 'relative', flexShrink: 0 }}>
+      <div ref={innerRef} style={{
+        position: 'absolute', top: 0, left: 0,
         transformOrigin: 'top left', transform: `scale(${scale})`,
-        fontSize: ICON_FONT, lineHeight: 1.0, letterSpacing: 0,
+        visibility: measured ? 'visible' : 'hidden',
+        fontSize: '4.5px', lineHeight: 1.0, letterSpacing: 0,
         whiteSpace: 'pre', color: fg,
       }}>
         {mask.map((row, ry) => {
@@ -789,7 +801,7 @@ function HomePage({ mouse, tick, fg, fgDim, t, wmFontSize }) {
   );
 }
 
-function TeamPage({ mouse, tick, fg }) {
+function TeamPage({ mouse, tick, fg, fgDim }) {
   return (
     <div style={{
       flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -797,12 +809,22 @@ function TeamPage({ mouse, tick, fg }) {
     }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: `repeat(3, ${ICON_SIZE}px)`,
-        gap: 'clamp(16px, 3vw, 40px)',
+        gridTemplateColumns: 'repeat(3, auto)',
+        gap: 'clamp(32px, 5vw, 64px)',
         justifyContent: 'center',
       }}>
         {TEAM_MASKS.map((mask, i) => (
-          <TeamIcon key={i} mask={mask} mouse={mouse} tick={tick} fg={fg} />
+          <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
+            <TeamIcon mask={mask} mouse={mouse} tick={tick} fg={fg} />
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 'clamp(9px, 1vw, 11px)', letterSpacing: '0.22em', textTransform: 'uppercase', color: fg }}>
+                {TEAM_MEMBERS[i].name}
+              </div>
+              <div style={{ fontSize: 'clamp(9px, 1vw, 11px)', letterSpacing: '0.22em', textTransform: 'uppercase', color: fgDim, marginTop: 4 }}>
+                {TEAM_MEMBERS[i].role}
+              </div>
+            </div>
+          </div>
         ))}
       </div>
     </div>
@@ -902,7 +924,7 @@ function MonicV2({ tweaks, page, onNavigate }) {
       </div>
 
       {page === 'home' && <HomePage mouse={mouse} tick={tick} fg={fg} fgDim={fgDim} t={t} wmFontSize={wmFontSize} />}
-      {page === 'team' && <TeamPage mouse={mouse} tick={tick} fg={fg} />}
+      {page === 'team' && <TeamPage mouse={mouse} tick={tick} fg={fg} fgDim={fgDim} />}
       {page === 'blog' && <BlogPage fgDim={fgDim} />}
 
       {/* footer */}
