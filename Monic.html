@@ -670,7 +670,24 @@ const TEAM_MASKS = [
   ],
 ];
 
-const ICON_TARGET = 80; // px — every icon scales to fit this box
+const ICON_TARGET = 80; // px — every icon's content scales to fill this box
+
+function trimMask(mask) {
+  let first = 0, last = mask.length - 1;
+  while (first <= last && mask[first].trim() === '') first++;
+  while (last >= first && mask[last].trim() === '') last--;
+  const rows = mask.slice(first, last + 1);
+  let minC = Infinity, maxC = 0;
+  rows.forEach(row => {
+    for (let i = 0; i < row.length; i++) {
+      if (row[i] !== ' ') { minC = Math.min(minC, i); maxC = Math.max(maxC, i); }
+    }
+  });
+  if (minC === Infinity) return rows;
+  return rows.map(row => row.slice(minC, maxC + 1));
+}
+
+const TRIMMED_MASKS = TEAM_MASKS.map(trimMask);
 
 const TEAM_MEMBERS = [
   { name: 'Name', role: 'Role' },
@@ -813,7 +830,7 @@ function TeamPage({ mouse, tick, fg, fgDim }) {
         gap: 'clamp(32px, 5vw, 64px)',
         justifyContent: 'center',
       }}>
-        {TEAM_MASKS.map((mask, i) => (
+        {TRIMMED_MASKS.map((mask, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
             <TeamIcon mask={mask} mouse={mouse} tick={tick} fg={fg} />
             <div style={{ textAlign: 'center' }}>
