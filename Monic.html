@@ -668,13 +668,32 @@ const TEAM_MASKS = [
   ],
 ];
 
+const ICON_SIZE    = 60;  // px — fixed display box for every icon
+const ICON_FONT    = 4.5; // px — reference render size
+const ICON_CHAR_W  = 0.6; // monospace char-width / font-size ratio
+
 function TeamIcon({ mask, mouse, tick, fg }) {
+  const rows     = mask.length;
+  const maxCols  = Math.max(...mask.map(r => r.length));
+  const naturalH = rows    * ICON_FONT;
+  const naturalW = maxCols * ICON_FONT * ICON_CHAR_W;
+  const scale    = Math.min(ICON_SIZE / naturalW, ICON_SIZE / naturalH);
+  const offsetX  = (ICON_SIZE - naturalW * scale) / 2;
+  const offsetY  = (ICON_SIZE - naturalH * scale) / 2;
+
   return (
-    <div style={{ display: 'inline-block', fontSize: 'clamp(2px, 0.4vw, 4.5px)', lineHeight: 1.0, letterSpacing: 0, whiteSpace: 'pre', color: fg }}>
-      {mask.map((row, ry) => {
-        const text = row.split('').map(cell => cell === ' ' ? ' ' : '/').join('');
-        return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
-      })}
+    <div style={{ width: ICON_SIZE, height: ICON_SIZE, position: 'relative', flexShrink: 0 }}>
+      <div style={{
+        position: 'absolute', top: offsetY, left: offsetX,
+        transformOrigin: 'top left', transform: `scale(${scale})`,
+        fontSize: ICON_FONT, lineHeight: 1.0, letterSpacing: 0,
+        whiteSpace: 'pre', color: fg,
+      }}>
+        {mask.map((row, ry) => {
+          const text = row.split('').map(cell => cell === ' ' ? ' ' : '/').join('');
+          return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
+        })}
+      </div>
     </div>
   );
 }
@@ -776,11 +795,9 @@ function TeamPage({ mouse, tick, fg }) {
     }}>
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap: 'clamp(24px, 4vw, 56px)',
-        maxWidth: 900,
-        width: '100%',
-        justifyItems: 'center',
+        gridTemplateColumns: `repeat(3, ${ICON_SIZE}px)`,
+        gap: 'clamp(16px, 3vw, 40px)',
+        justifyContent: 'center',
       }}>
         {TEAM_MASKS.map((mask, i) => (
           <TeamIcon key={i} mask={mask} mouse={mouse} tick={tick} fg={fg} />
