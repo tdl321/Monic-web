@@ -359,12 +359,14 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
 
   return (
     <span ref={ref} className={className} style={extra}>
-      {text.split('').map((ch, i) => (
-        <span key={i} data-g data-orig={ch}
-              style={{ display: 'inline-block', transition: 'transform .12s ease-out' }}>
-          {ch === ' ' ? ' ' : ch}
-        </span>
-      ))}
+      {text.split('').map((ch, i) =>
+        ch === ' '
+          ? <span key={i}> </span>
+          : <span key={i} data-g data-orig={ch}
+                  style={{ display: 'inline-block', transition: 'transform .12s ease-out' }}>
+              {ch}
+            </span>
+      )}
     </span>
   );
 }
