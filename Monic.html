@@ -541,15 +541,10 @@ const TEAM_MASKS = [
 ];
 
 function TeamIcon({ mask, mouse, tick, fg }) {
-  const phase = Math.floor(tick / 5);
   return (
     <div style={{ display: 'inline-block', fontSize: 'clamp(6px, 1.8vw, 18px)', lineHeight: 1.0, letterSpacing: '0.05em', whiteSpace: 'pre', color: fg }}>
       {mask.map((row, ry) => {
-        const text = row.split('').map((cell, cx) => {
-          if (cell === '.') return ' ';
-          const seed = (phase * 73856093) ^ (ry * 19349663) ^ (cx * 83492791);
-          return WORDMARK_POOL[Math.abs(seed) % WORDMARK_POOL.length];
-        }).join('');
+        const text = row.split('').map(cell => cell === '.' ? ' ' : '/').join('');
         return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
       })}
     </div>
