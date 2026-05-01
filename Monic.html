@@ -500,7 +500,7 @@ function LogoM({ mouse, tick, color }) {
   );
 }
 
-function MonicV2({ tweaks }) {
+function MonicV2({ tweaks, page, onNavigate }) {
   const t = tweaks;
   const rootRef = React.useRef(null);
   const [mouse, setMouse] = React.useState({ x: -9999, y: -9999, active: false });
@@ -552,13 +552,29 @@ function MonicV2({ tweaks }) {
         overflowX: 'hidden',
       }}
     >
-      {/* header */}
+      {/* header nav */}
       <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start',
-        flexShrink: 0,
-        padding: 'clamp(24px, 5vw, 56px) clamp(20px, 5vw, 64px)',
+        display: 'flex', alignItems: 'center', flexShrink: 0,
+        padding: 'clamp(24px, 5vw, 56px) clamp(20px, 5vw, 64px) 0',
+        gap: 'clamp(14px, 2vw, 28px)',
       }}>
-        <LogoM mouse={mouse} tick={tick} color={fg} />
+        {['HOME', 'TEAM', 'BLOG'].map(label => (
+          <span
+            key={label}
+            onClick={() => onNavigate(label.toLowerCase())}
+            style={{
+              fontSize: 'clamp(9px, 1vw, 11px)',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              color: page === label.toLowerCase() ? fg : fgDim,
+              cursor: 'default',
+              userSelect: 'none',
+              transition: 'color .15s',
+            }}
+          >
+            <Reactive mouse={mouse} t={tick}>{`[${label}]`}</Reactive>
+          </span>
+        ))}
       </div>
 
       {/* wordmark */}
@@ -636,9 +652,16 @@ const TWEAK_DEFAULTS = {
 
 function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [page, setPage] = React.useState(window.location.hash.slice(1) || 'home');
+
+  const navigate = (p) => {
+    window.location.hash = p;
+    setPage(p);
+  };
+
   return (
     <>
-      <MonicV2 tweaks={t} />
+      <MonicV2 tweaks={t} page={page} onNavigate={navigate} />
       <TweaksPanel title="Tweaks">
         <TweakSection label="Typography" />
         <TweakSelect label="Mono font" value={t.font}
