@@ -311,7 +311,7 @@ function flattenToText(children) {
   return '';
 }
 
-function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
+function Reactive({ children, mouse, t, r: R = 30, style: extra = {}, className = '' }) {
   const ref = React.useRef(null);
   const [items, setItems] = React.useState([]);
   const text = flattenToText(children);
@@ -342,7 +342,6 @@ function Reactive({ children, mouse, t, style: extra = {}, className = '' }) {
       });
       return;
     }
-    const R = 30;
     items.forEach(it => {
       const dx = it.cx - mouse.x;
       const dy = it.cy - mouse.y;
@@ -671,7 +670,7 @@ function TeamIcon({ mask, mouse, tick, fg }) {
     <div style={{ fontSize: '2px', lineHeight: 1.0, letterSpacing: 0, whiteSpace: 'pre', color: fg }}>
       {mask.map((row, ry) => {
         const text = row.split('').map(c => c === ' ' ? ' ' : '/').join('');
-        return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
+        return <div key={ry}><Reactive mouse={mouse} t={tick} r={6}>{text}</Reactive></div>;
       })}
     </div>
   );
