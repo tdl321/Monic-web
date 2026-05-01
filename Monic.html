@@ -666,12 +666,13 @@ const TEAM_MEMBERS = [
   { name: 'Nathan', role: 'AI Engineer  ·  Published Researcher' },
 ];
 
-function TeamIcon({ mask, fg }) {
+function TeamIcon({ mask, mouse, tick, fg }) {
   return (
     <div style={{ fontSize: '2px', lineHeight: 1.0, letterSpacing: 0, whiteSpace: 'pre', color: fg }}>
-      {mask.map((row, ry) => (
-        <div key={ry}>{row.split('').map(c => c === ' ' ? ' ' : '/').join('')}</div>
-      ))}
+      {mask.map((row, ry) => {
+        const text = row.split('').map(c => c === ' ' ? ' ' : '/').join('');
+        return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
+      })}
     </div>
   );
 }
@@ -779,7 +780,7 @@ function TeamPage({ mouse, tick, fg, fgDim }) {
       }}>
         {[3, 4, 5, 0, 1, 2].map((idx, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <TeamIcon mask={TEAM_MASKS[idx]} fg={fg} />
+            <TeamIcon mask={TEAM_MASKS[idx]} mouse={mouse} tick={tick} fg={fg} />
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 'clamp(9px, 1vw, 11px)', letterSpacing: '0.22em', textTransform: 'uppercase', color: fg }}>
                 {TEAM_MEMBERS[idx].name}
