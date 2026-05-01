@@ -670,24 +670,28 @@ const TEAM_MASKS = [
   ],
 ];
 
-const ICON_TARGET = 80; // px — every icon's content scales to fill this box
-
-function trimMask(mask) {
-  let first = 0, last = mask.length - 1;
-  while (first <= last && mask[first].trim() === '') first++;
-  while (last >= first && mask[last].trim() === '') last--;
-  const rows = mask.slice(first, last + 1);
-  let minC = Infinity, maxC = 0;
-  rows.forEach(row => {
-    for (let i = 0; i < row.length; i++) {
-      if (row[i] !== ' ') { minC = Math.min(minC, i); maxC = Math.max(maxC, i); }
-    }
+// Trim to content bounds, pad all to same dimensions, render at fixed small size
+(function() {
+  function trim(mask) {
+    let r0 = 0, r1 = mask.length - 1;
+    while (r0 <= r1 && mask[r0].trim() === '') r0++;
+    while (r1 >= r0 && mask[r1].trim() === '') r1--;
+    const rows = mask.slice(r0, r1 + 1);
+    let c0 = Infinity, c1 = 0;
+    rows.forEach(r => { for (let i = 0; i < r.length; i++) if (r[i] !== ' ') { c0 = Math.min(c0, i); c1 = Math.max(c1, i); } });
+    return c0 === Infinity ? rows : rows.map(r => r.slice(c0, c1 + 1));
+  }
+  const trimmed = TEAM_MASKS.map(trim);
+  const maxR = Math.max(...trimmed.map(m => m.length));
+  const maxC = Math.max(...trimmed.map(m => Math.max(...m.map(r => r.length))));
+  window.__ICON_MASKS = trimmed.map(m => {
+    const rows = m.map(r => r.padEnd(maxC, ' '));
+    while (rows.length < maxR) rows.push(' '.repeat(maxC));
+    return rows;
   });
-  if (minC === Infinity) return rows;
-  return rows.map(row => row.slice(minC, maxC + 1));
-}
+})();
 
-const TRIMMED_MASKS = TEAM_MASKS.map(trimMask);
+const TRIMMED_MASKS = window.__ICON_MASKS;
 
 const TEAM_MEMBERS = [
   { name: 'Name', role: 'Role' },
@@ -698,33 +702,12 @@ const TEAM_MEMBERS = [
   { name: 'Name', role: 'Role' },
 ];
 
-function TeamIcon({ mask, mouse, tick, fg }) {
-  const innerRef = React.useRef(null);
-  const [scale, setScale] = React.useState(1);
-  const [measured, setMeasured] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!innerRef.current) return;
-    const { width, height } = innerRef.current.getBoundingClientRect();
-    if (width === 0 || height === 0) return;
-    setScale(Math.min(ICON_TARGET / width, ICON_TARGET / height));
-    setMeasured(true);
-  }, []);
-
+function TeamIcon({ mask, fg }) {
   return (
-    <div style={{ width: ICON_TARGET, height: ICON_TARGET, position: 'relative', flexShrink: 0 }}>
-      <div ref={innerRef} style={{
-        position: 'absolute', top: 0, left: 0,
-        transformOrigin: 'top left', transform: `scale(${scale})`,
-        visibility: measured ? 'visible' : 'hidden',
-        fontSize: '4.5px', lineHeight: 1.0, letterSpacing: 0,
-        whiteSpace: 'pre', color: fg,
-      }}>
-        {mask.map((row, ry) => {
-          const text = row.split('').map(cell => cell === ' ' ? ' ' : '/').join('');
-          return <div key={ry}><Reactive mouse={mouse} t={tick}>{text}</Reactive></div>;
-        })}
-      </div>
+    <div style={{ fontSize: '2px', lineHeight: 1.0, letterSpacing: 0, whiteSpace: 'pre', color: fg }}>
+      {mask.map((row, ry) => (
+        <div key={ry}>{row.split('').map(c => c === ' ' ? ' ' : '/').join('')}</div>
+      ))}
     </div>
   );
 }
@@ -832,7 +815,7 @@ function TeamPage({ mouse, tick, fg, fgDim }) {
       }}>
         {[3, 4, 5, 0, 1, 2].map((idx, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            <TeamIcon mask={TRIMMED_MASKS[idx]} mouse={mouse} tick={tick} fg={fg} />
+            <TeamIcon mask={TRIMMED_MASKS[idx]} fg={fg} />
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 'clamp(9px, 1vw, 11px)', letterSpacing: '0.22em', textTransform: 'uppercase', color: fg }}>
                 {TEAM_MEMBERS[idx].name}
