@@ -667,7 +667,7 @@ const TEAM_MEMBERS = [
 
 function TeamIcon({ mask, fg }) {
   return (
-    <div style={{ fontSize: '2px', lineHeight: 1.0, letterSpacing: 0, whiteSpace: 'pre', color: fg }}>
+    <div style={{ fontSize: '2.5px', lineHeight: 1.0, letterSpacing: 0, whiteSpace: 'pre', color: fg }}>
       {mask.map((row, ry) => (
         <div key={ry}>{row.split('').map(c => c === ' ' ? ' ' : '/').join('')}</div>
       ))}
