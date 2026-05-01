@@ -500,6 +500,92 @@ function LogoM({ mouse, tick, color }) {
   );
 }
 
+function HomePage({ mouse, tick, fg, fgDim, t, wmFontSize }) {
+  return (
+    <>
+      <div style={{
+        flex: 1, display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        padding: 'clamp(16px, 3vw, 40px) clamp(16px, 4vw, 48px)',
+        overflow: 'hidden',
+      }}>
+        <div style={{ display: 'inline-block', maxWidth: '100%', overflow: 'hidden' }}>
+          <WordmarkAscii
+            mouse={mouse} tick={tick}
+            fontSize={wmFontSize}
+            color={fg} weight={t.weight}
+            letterSpacing={t.tracking + 'em'}
+          />
+        </div>
+        <div style={{
+          marginTop: 'clamp(20px, 3.5vw, 56px)',
+          fontSize: 'clamp(9px, 1.1vw, 13px)',
+          letterSpacing: '0.42em', textTransform: 'uppercase',
+          color: fgDim,
+        }}>
+          <Reactive mouse={mouse} t={tick}>{'Quantitative  Trading  Firm'}</Reactive>
+        </div>
+      </div>
+      <div style={{
+        flexShrink: 0,
+        padding: 'clamp(24px, 4vw, 64px) clamp(24px, 8vw, 120px)',
+        textAlign: 'center',
+      }}>
+        <div style={{ fontSize: 'clamp(11px, 1.3vw, 15px)', letterSpacing: '0.32em', textTransform: 'uppercase', color: fg, marginBottom: 18 }}>
+          <Reactive mouse={mouse} t={tick}>Thesis</Reactive>
+        </div>
+        <div style={{ fontSize: 'clamp(11px, 1.3vw, 15px)', lineHeight: 1.85, color: fg, letterSpacing: '0.005em', maxWidth: 800, margin: '0 auto' }}>
+          <Reactive mouse={mouse} t={tick}>{t.thesis}</Reactive>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function TeamPage({ dark }) {
+  const ICON_POSITIONS = ['0% 0%', '50% 0%', '100% 0%', '0% 100%', '50% 100%', '100% 100%'];
+  return (
+    <div style={{
+      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+      padding: 'clamp(40px, 8vw, 80px) clamp(20px, 5vw, 64px)',
+    }}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 'clamp(20px, 4vw, 48px)',
+        maxWidth: 640,
+        width: '100%',
+      }}>
+        {ICON_POSITIONS.map((pos, i) => (
+          <div key={i} style={{
+            aspectRatio: '1',
+            backgroundImage: 'url(/team-icons.png)',
+            backgroundSize: '300% 200%',
+            backgroundPosition: pos,
+            backgroundRepeat: 'no-repeat',
+            filter: dark ? 'invert(1)' : 'none',
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function BlogPage({ fgDim }) {
+  return (
+    <div style={{
+      flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <span style={{
+        fontSize: 'clamp(9px, 1.1vw, 13px)',
+        letterSpacing: '0.42em',
+        textTransform: 'uppercase',
+        color: fgDim,
+      }}>Blog</span>
+    </div>
+  );
+}
+
 function MonicV2({ tweaks, page, onNavigate }) {
   const t = tweaks;
   const rootRef = React.useRef(null);
@@ -572,49 +658,14 @@ function MonicV2({ tweaks, page, onNavigate }) {
               transition: 'color .15s',
             }}
           >
-            <Reactive mouse={mouse} t={tick}>{`[${label}]`}</Reactive>
+            {`[${label}]`}
           </span>
         ))}
       </div>
 
-      {/* wordmark */}
-      <div style={{
-        flex: 1, display: 'flex', flexDirection: 'column',
-        alignItems: 'center', justifyContent: 'center',
-        padding: 'clamp(16px, 3vw, 40px) clamp(16px, 4vw, 48px)',
-        overflow: 'hidden',
-      }}>
-        <div style={{ display: 'inline-block', maxWidth: '100%', overflow: 'hidden' }}>
-          <WordmarkAscii
-            mouse={mouse} tick={tick}
-            fontSize={wmFontSize}
-            color={fg} weight={t.weight}
-            letterSpacing={t.tracking + 'em'}
-          />
-        </div>
-        <div style={{
-          marginTop: 'clamp(20px, 3.5vw, 56px)',
-          fontSize: 'clamp(9px, 1.1vw, 13px)',
-          letterSpacing: '0.42em', textTransform: 'uppercase',
-          color: fgDim,
-        }}>
-          <Reactive mouse={mouse} t={tick}>{'Quantitative  Trading  Firm'}</Reactive>
-        </div>
-      </div>
-
-      {/* thesis */}
-      <div style={{
-        flexShrink: 0,
-        padding: 'clamp(24px, 4vw, 64px) clamp(24px, 8vw, 120px)',
-        textAlign: 'center',
-      }}>
-        <div style={{ fontSize: 'clamp(11px, 1.3vw, 15px)', letterSpacing: '0.32em', textTransform: 'uppercase', color: fg, marginBottom: 18 }}>
-          <Reactive mouse={mouse} t={tick}>Thesis</Reactive>
-        </div>
-        <div style={{ fontSize: 'clamp(11px, 1.3vw, 15px)', lineHeight: 1.85, color: fg, letterSpacing: '0.005em', maxWidth: 800, margin: '0 auto' }}>
-          <Reactive mouse={mouse} t={tick}>{t.thesis}</Reactive>
-        </div>
-      </div>
+      {page === 'home' && <HomePage mouse={mouse} tick={tick} fg={fg} fgDim={fgDim} t={t} wmFontSize={wmFontSize} />}
+      {page === 'team' && <TeamPage dark={t.dark} />}
+      {page === 'blog' && <BlogPage fgDim={fgDim} />}
 
       {/* footer */}
       <div style={{
